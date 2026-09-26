@@ -5,32 +5,32 @@ from pathlib import Path
 import typer
 
 from . import __version__
-from .auth_test import MissingAuthenticationTest
-from .api_misconfiguration_test import ApiMisconfigurationTest
-from .auth_scheme_test import AuthenticationSchemeAnalysisTest
-from .authentication import (
+from .Authentication.auth_test import MissingAuthenticationTest
+from .Api_misconfiguration.api_misconfiguration_test import ApiMisconfigurationTest
+from .Authentication.auth_scheme_test import AuthenticationSchemeAnalysisTest
+from .Authentication.authentication import (
     AuthenticationConfigError,
     authentication_config_from_environment,
     bfla_context_from_environment,
     bola_context_from_environment,
 )
-from .bfla_test import BrokenFunctionLevelAuthorizationTest
-from .bola_test import BrokenObjectLevelAuthorizationTest
-from .discovery import OpenAPIDiscoveryError, discover_openapi
-from .engine import AssessmentEngine
-from .http_client import sanitize_url
-from .command_injection_test import CommandInjectionTest
-from .input_validation_test import InputValidationTest
-from .nosql_injection_test import NoSqlInjectionTest
-from .output import render_json, render_json_results, render_text, render_text_results
-from .html_report import write_html_report
-from .pdf_report import write_pdf_report
-from .report import build_assessment_report
-from .sensitive_data_test import SensitiveDataExposureTest
-from .error_disclosure_test import ErrorDisclosureTest
-from .rate_limit_test import RateLimitTest
-from .security_config_test import SecurityConfigurationTest
-from .sql_injection_test import SqlInjectionTest
+from .Authorization.bfla_test import BrokenFunctionLevelAuthorizationTest
+from .Authorization.bola_test import BrokenObjectLevelAuthorizationTest
+from .Discovery.discovery import OpenAPIDiscoveryError, discover_openapi
+from .Core.engine import AssessmentEngine
+from .Core.http_client import sanitize_url
+from .Injection.command_injection_test import CommandInjectionTest
+from .Input_validation.input_validation_test import InputValidationTest
+from .Injection.nosql_injection_test import NoSqlInjectionTest
+from .Reporting.output import render_json, render_json_results, render_text, render_text_results
+from .Reporting.html_report import write_html_report
+from .Reporting.pdf_report import write_pdf_report
+from .Reporting.report import build_assessment_report
+from .Data_exposure.sensitive_data_test import SensitiveDataExposureTest
+from .Information_disclosure.error_disclosure_test import ErrorDisclosureTest
+from .Rate_limiting.rate_limit_test import RateLimitTest
+from .Security_configuration.security_config_test import SecurityConfigurationTest
+from .Injection.sql_injection_test import SqlInjectionTest
 
 app = typer.Typer(
     add_completion=False,
