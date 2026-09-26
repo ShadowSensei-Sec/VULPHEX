@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vulphex"
+version = "0.1.0"
+description = "CLI-based API Security Assessment Tool"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115,<1.0",
+    "httpx>=0.28,<1.0",
+    "rich>=15,<16",
+    "typer>=0.27,<1.0",
+    "uvicorn>=0.30,<1.0",
+]
+
+[project.scripts]
+vulphex = "vulphex.__main__:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
