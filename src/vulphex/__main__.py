@@ -1,7 +1,7 @@
 """Command-line entry point for VULPHEX."""
 
 import json
-
+from pathlib import Path
 import typer
 
 from . import __version__
@@ -23,6 +23,9 @@ from .command_injection_test import CommandInjectionTest
 from .input_validation_test import InputValidationTest
 from .nosql_injection_test import NoSqlInjectionTest
 from .output import render_json, render_json_results, render_text, render_text_results
+from .html_report import write_html_report
+from .pdf_report import write_pdf_report
+from .report import build_assessment_report
 from .sensitive_data_test import SensitiveDataExposureTest
 from .error_disclosure_test import ErrorDisclosureTest
 from .rate_limit_test import RateLimitTest
@@ -122,7 +125,13 @@ def assess_api(
         help="Output format: text or json.",
         case_sensitive=False,
     ),
+    report_dir: str | None = typer.Option(
+        None,
+        "--report-dir",
+        help="Directory where JSON, HTML and PDF assessment reports will be written.",
+    ),
 ) -> None:
+    
     """Discover an API and run currently applicable security tests."""
     if output.lower() not in {"text", "json"}:
         raise typer.BadParameter("must be either 'text' or 'json'", param_hint="--output")
@@ -174,14 +183,37 @@ def assess_api(
         bola_context=bola_context,
         bfla_context=bfla_context,
     )
-    if output.lower() == "json":
-        typer.echo(render_json_results(results))
-        return
+
     if not results:
         typer.echo("No assessable endpoints were discovered.")
         return
-    typer.echo(render_text_results(results))
 
+    if output.lower() == "json":
+        typer.echo(render_json_results(results))
+    else:
+        typer.echo(render_text_results(results))
+
+    if report_dir:
+        report = build_assessment_report(
+            results,
+            target=sanitize_url(url),
+            tool_version=__version__,
+        )
+
+        output_path = Path(report_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+
+        json_path = output_path / "assessment.json"
+        html_path = output_path / "assessment.html"
+        pdf_path = output_path / "assessment.pdf"
+        write_pdf_report(report, pdf_path)
+
+        report.write_json(json_path)
+        write_html_report(report, html_path)
+
+        typer.echo(f"JSON report: {json_path}")
+        typer.echo(f"HTML report: {html_path}")
+        typer.echo(f"PDF report: {pdf_path}")
 
 if __name__ == "__main__":
     app()
