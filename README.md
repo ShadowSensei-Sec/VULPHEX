@@ -1,38 +1,440 @@
 # VULPHEX
 
-VULPHEX is a CLI-based API Security Assessment Tool. Project foundation for Day 1 implementation.
+<p align="center">
+  <img src="assets/Vulphex1.png" alt="VULPHEX - API Security Assessment Tool" width="850">
+</p>
 
-## Development Setup
+<p align="center">
+  <strong>Secure Beyond Endpoints</strong><br>
+  API Security Assessment Tool
+</p>
 
-Requires Python 3.13 or newer.
+---
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python -m pip install --editable .
-python -m vulphex --help
+## Problem
+
+Modern applications rely heavily on APIs to expose data and application functionality. Weak authentication, broken authorization, unsafe input handling, injection vulnerabilities, excessive data exposure, insecure security configuration, and insufficient rate limiting can introduce significant security risks.
+
+Manual API security testing can also become repetitive when the same baseline checks must be performed across multiple endpoints.
+
+VULPHEX addresses this by providing a controlled, CLI-based API security assessment workflow that can discover API endpoints, execute bounded security checks, analyze observed behavior, and produce evidence-based assessment results.
+
+---
+
+## Solution
+
+**VULPHEX** is a command-line API Security Assessment Tool designed for **authorized security testing**.
+
+It combines:
+
+- API discovery
+- Endpoint-aware security testing
+- Authentication and authorization assessment
+- Evidence collection
+- Finding aggregation
+- Severity classification
+- Terminal output
+- JSON, HTML, and PDF reporting
+
+VULPHEX focuses on controlled security validation rather than destructive exploitation. Security tests use bounded requests and conservative detection logic so results can be reviewed and reproduced by a security tester.
+
+---
+
+## Key Features
+
+### API Discovery
+- OpenAPI / Swagger discovery
+- Endpoint inventory
+- HTTP method and endpoint context
+- Schema-aware endpoint analysis
+
+### Authentication & Authorization
+- Missing authentication assessment
+- Authentication scheme analysis
+- BOLA testing with explicit test context
+- BFLA testing with explicit authorization context
+
+### Input & Injection Security
+- API input validation testing
+- Controlled SQL injection testing
+- Controlled NoSQL injection testing
+- Controlled OS command injection testing
+
+### Data & Information Security
+- Sensitive data exposure detection
+- Error and information disclosure detection
+
+### Security Configuration
+- Rate-limiting assessment
+- CORS and security configuration assessment
+- API misconfiguration assessment
+
+### Assessment & Reporting
+- Evidence-based finding aggregation
+- Severity classification
+- Terminal output
+- JSON reports
+- HTML reports
+- PDF reports
+- Interactive CLI shell
+
+### Platform & Development
+- Windows launcher
+- Linux / Unix launcher
+- Automated regression test suite
+
+---
+
+## Architecture
+
+```text
+                         ┌──────────────────────┐
+                         │     VULPHEX CLI      │
+                         │    Windows / Linux   │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  Discovery Engine    │
+                         │  OpenAPI / Swagger   │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  Assessment Engine   │
+                         │   Endpoint Context   │
+                         └──────────┬───────────┘
+                                    │
+              ┌─────────────────────┼─────────────────────┐
+              │                     │                     │
+              ▼                     ▼                     ▼
+      ┌───────────────┐     ┌───────────────┐     ┌────────────────┐
+      │Authentication │     │ Authorization │     │ Security Tests│
+      │  & Metadata   │     │   BOLA/BFLA   │     │ Input/Injection│
+      └───────────────┘     └───────────────┘     │ Data/Config    │
+                                                   └───────┬────────┘
+                                                           │
+                                                           ▼
+                                               ┌──────────────────────┐
+                                               │  Finding Aggregator  │
+                                               │ Evidence & Severity   │
+                                               └──────────┬───────────┘
+                                                          │
+                                                          ▼
+                                               ┌──────────────────────┐
+                                               │ Output & Reporting   │
+                                               │ CLI / JSON / HTML /  │
+                                               │ PDF                  │
+                                               └──────────────────────┘
 ```
 
-## Controlled Local Test API
+---
 
-The local test API is provided only for validating VULPHEX behavior. It does
-not contact external services and uses synthetic test data only.
+## Technology Stack
 
-- `/public` is intentionally unauthenticated and returns HTTP 200.
-- `/protected` requires the synthetic token `vulphex-local-test-token` in an
-	`Authorization: Bearer ...` header.
+| Component | Technology |
+|---|---|
+| Language | Python 3.13+ |
+| CLI | Typer |
+| HTTP Client | HTTPX |
+| API Specification | OpenAPI / Swagger |
+| Configuration | YAML / Environment Variables |
+| Testing | pytest |
+| Terminal Output | Rich |
+| Reporting | JSON / HTML / ReportLab PDF |
+| Packaging | `pyproject.toml` |
+| Platforms | Windows / Linux / Unix-like systems |
 
-Start it during development with:
+---
 
-```powershell
-python -m uvicorn tests.test_api:app --host 127.0.0.1 --port 8000
+## Installation
+
+VULPHEX uses a private Python runtime inside `.venv`. Users **do not need to activate the virtual environment manually**.
+
+### Linux / Unix
+
+Clone the repository:
+
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd VULPHEX
 ```
 
-## Assessment Engine
+Run the installer:
 
-The Assessment Engine accepts a target and an ordered collection of security
-tests, executes them sequentially, and collects their `AssessmentResult`
-objects. Results then flow to the existing text or JSON renderer. AUTH-001 is
-currently the only integrated test; additional security tests can be added
-later without changing the CLI orchestration.
+```bash
+chmod +x install.sh vulphex
+./install.sh
+```
+
+Launch VULPHEX:
+
+```bash
+./vulphex --help
+```
+
+### Windows PowerShell
+
+Clone the repository:
+
+```powershell
+git clone <YOUR_REPOSITORY_URL>
+cd VULPHEX
+```
+
+Run the installer:
+
+```powershell
+.\install.ps1
+```
+
+Launch VULPHEX:
+
+```powershell
+.\vulphex.ps1 --help
+```
+
+### Requirements
+
+- Python 3.13 or newer
+- Network access for package installation
+- An authorized API target for security assessment
+
+---
+
+## Configuration
+
+VULPHEX supports explicit authentication and authorization assessment contexts.
+
+Authentication is intentionally **opt-in**. Credentials, tokens, and other sensitive values should be supplied through the supported configuration mechanisms rather than hard-coded into source code.
+
+### Supported Authentication Modes
+
+- No authentication
+- Bearer authentication
+- API key authentication
+- Custom header authentication
+
+Authorization tests such as BOLA and BFLA require explicit test context. VULPHEX does not infer user roles or silently create authorization identities.
+
+View the available options with:
+
+```bash
+./vulphex --help
+```
+
+---
+
+## How to Run
+
+### Show Help
+
+Linux:
+
+```bash
+./vulphex --help
+```
+
+Windows:
+
+```powershell
+.\vulphex.ps1 --help
+```
+
+### Show Version
+
+```bash
+./vulphex --version
+```
+
+### Discover OpenAPI / Swagger
+
+```bash
+./vulphex --url https://example.com --parse
+```
+
+Short option:
+
+```bash
+./vulphex --url https://example.com -p
+```
+
+Discovery checks supported OpenAPI / Swagger locations and displays the discovered endpoint inventory.
+
+### Run Security Assessment
+
+Run the complete security assessment:
+
+```bash
+./vulphex --url https://example.com --security-all
+```
+
+### Run Individual Security Tests
+
+```bash
+./vulphex --url https://example.com --missing-authentication
+./vulphex --url https://example.com --auth-scheme
+./vulphex --url https://example.com --bola
+./vulphex --url https://example.com --bfla
+./vulphex --url https://example.com --input-validation
+./vulphex --url https://example.com --sql-injection
+./vulphex --url https://example.com --nosql-injection
+./vulphex --url https://example.com --command-injection
+./vulphex --url https://example.com --data-exposure
+./vulphex --url https://example.com --error-disclosure
+./vulphex --url https://example.com --rate-limiting
+./vulphex --url https://example.com --security-configuration
+./vulphex --url https://example.com --api-misconfiguration
+```
+
+### Generate Reports
+
+JSON:
+
+```bash
+./vulphex --url https://example.com --security-all --json
+```
+
+HTML:
+
+```bash
+./vulphex --url https://example.com --security-all --html
+```
+
+PDF:
+
+```bash
+./vulphex --url https://example.com --security-all --pdf
+```
+
+Generated assessment output is runtime data and is intentionally not stored in the source repository.
+
+### Interactive Shell
+
+Run VULPHEX without arguments:
+
+```bash
+./vulphex
+```
+
+The interactive shell accepts the same VULPHEX option names and short aliases as direct CLI execution.
+
+Shell-only commands:
+
+```text
+help
+banner
+clear
+exit
+quit
+```
+
+---
+
+## How to Test
+
+VULPHEX includes an automated regression test suite.
+
+Run:
+
+```bash
+python -m pytest
+```
+
+The test suite covers:
+
+- API discovery
+- Assessment engine
+- Authentication
+- Authorization
+- SQL injection
+- NoSQL injection
+- Command injection
+- Input validation
+- Sensitive data exposure
+- Information disclosure
+- Rate limiting
+- Security configuration
+- API misconfiguration
+- Reporting
+- CLI behavior
+
+Run the test suite after changes to the assessment engine, security tests, CLI, or reporting components to detect regressions.
+
+---
+
+## Authorized Test Environment
+
+VULPHEX is intended for **authorized security testing only**.
+
+Validation should begin against a controlled test API containing known secure, vulnerable, and edge-case behaviors. This provides a reproducible environment for validating detection logic without affecting third-party systems.
+
+After controlled validation, VULPHEX may be used against real applications only when explicit authorization exists and the target is within the applicable Rules of Engagement, Vulnerability Disclosure Program, or bug bounty scope.
+
+Appropriate environments include:
+
+- Locally hosted vulnerable APIs
+- Dedicated security testing environments
+- Internal applications with explicit authorization
+- Vulnerability Disclosure Programs
+- Bug bounty programs where API testing is explicitly permitted
+
+> **Do not use VULPHEX against systems outside your authorized scope.**
+
+---
+
+## Security Considerations
+
+VULPHEX is intentionally designed around bounded and controlled testing.
+
+### Safety Controls
+
+- No destructive exploitation
+- No credential theft
+- No real-world brute-force attacks
+- No denial-of-service or stress testing
+- No unrestricted endpoint fuzzing
+- No database extraction
+- No reverse shells or command execution
+- No unauthorized target testing
+- Explicit authentication configuration
+- Sanitized evidence and sensitive-value redaction
+- Conservative vulnerability classification
+- Endpoint and method applicability checks
+- Request limits for security tests
+- No hard-coded credentials or secrets
+
+Some findings may be reported as **potential** or **indicated** when the available evidence does not justify claiming confirmed exploitation.
+
+Security findings should therefore be manually validated by the tester before being treated as confirmed vulnerabilities.
+
+---
+
+## Future Improvements
+
+Potential future improvements include:
+
+- Broader API discovery capabilities
+- Additional authentication mechanisms
+- OAuth / OIDC security testing
+- Expanded authorization testing workflows
+- Additional API injection and parser-specific checks
+- More schema-aware test generation
+- Improved evidence normalization
+- Additional report formats
+- Configurable assessment profiles
+- Expanded regression-test coverage
+- Safe support for additional HTTP methods where appropriate
+- Improved integration with authorized bug-bounty workflows
+- Optional security-testing plugins/modules
+- Further performance and request-efficiency improvements
+
+---
+
+<p align="center">
+  <img src="assets/Fox.png" alt="VULPHEX Fox Logo" width="220">
+</p>
+
+<p align="center">
+  <strong>VULPHEX — Secure Beyond Endpoints</strong>
+</p>
