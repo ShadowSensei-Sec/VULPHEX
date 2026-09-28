@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+PYTHON="$SCRIPT_DIR/.venv/bin/python"
+
+if [[ ! -x "$PYTHON" ]]; then
+    echo "VULPHEX runtime is not installed."
+    echo
+    echo "Run the VULPHEX installer first:"
+    echo
+    echo "    ./install.sh"
+    echo
+    exit 1
+fi
+
+exec "$PYTHON" -m vulphex "$@"

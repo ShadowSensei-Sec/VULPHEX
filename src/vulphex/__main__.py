@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Optional
-
+import sys
 import typer
 
 from .Authentication.auth_scheme_test import AuthenticationSchemeAnalysisTest
@@ -31,6 +31,7 @@ from .Reporting.html_report import write_html_report
 from .Reporting.output import render_text_results
 from .Reporting.pdf_report import write_pdf_report
 from .Reporting.report import build_assessment_report
+from .shell import run_shell
 from .Security_configuration.security_config_test import (
     SecurityConfigurationTest,
 )
@@ -931,5 +932,13 @@ def _handle_results(
 # ENTRY POINT
 # ============================================================
 
+def main() -> None:
+    """Launch VULPHEX in direct CLI or interactive shell mode."""
+    if len(sys.argv) == 1:
+        run_shell(app)
+    else:
+        app()
+
+
 if __name__ == "__main__":
-    app()
+    main()
