@@ -33,11 +33,6 @@ htmlcov/
 .env
 .env.*
 !.env.example
-
-# Generated project output
-results/*
-!results/.gitkeep
-evidence/*
-!evidence/.gitkeep
-reports/*
-!reports/.gitkeep
+# VULPHEX generated assessment output
+reports/
+results/
