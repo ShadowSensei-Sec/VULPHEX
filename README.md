@@ -271,22 +271,37 @@ Run the complete security assessment:
 
 ### Run Individual Security Tests
 
-```bash
-./vulphex --url https://example.com --missing-authentication
-./vulphex --url https://example.com --auth-scheme
-./vulphex --url https://example.com --bola
-./vulphex --url https://example.com --bfla
-./vulphex --url https://example.com --input-validation
-./vulphex --url https://example.com --sql-injection
-./vulphex --url https://example.com --nosql-injection
-./vulphex --url https://example.com --command-injection
-./vulphex --url https://example.com --data-exposure
-./vulphex --url https://example.com --error-disclosure
-./vulphex --url https://example.com --rate-limiting
-./vulphex --url https://example.com --security-configuration
-./vulphex --url https://example.com --api-misconfiguration
-```
+VULPHEX supports individual security assessments using either the full option name or its short alias.
 
+| Security Test | Full Option | Short | Example |
+|---|---|---|---|
+| Missing Authentication | `--missing-authentication` | `-m` | `./vulphex --url https://example.com -m` |
+| Authentication Scheme Analysis | `--auth-scheme` | `-A` | `./vulphex --url https://example.com -A` |
+| BOLA | `--bola` | `-o` | `./vulphex --url https://example.com -o` |
+| BFLA | `--bfla` | `-f` | `./vulphex --url https://example.com -f` |
+| Input Validation | `--input-validation` | `-v` | `./vulphex --url https://example.com -v` |
+| SQL Injection | `--sql-injection` | `-s` | `./vulphex --url https://example.com -s` |
+| NoSQL Injection | `--nosql-injection` | `-n` | `./vulphex --url https://example.com -n` |
+| OS Command Injection | `--command-injection` | `-c` | `./vulphex --url https://example.com -c` |
+| Sensitive Data Exposure | `--data-exposure` | `-d` | `./vulphex --url https://example.com -d` |
+| Error & Information Disclosure | `--error-disclosure` | `-e` | `./vulphex --url https://example.com -e` |
+| Rate Limiting | `--rate-limiting` | `-l` | `./vulphex --url https://example.com -l` |
+| Security Configuration | `--security-configuration` | `-q` | `./vulphex --url https://example.com -q` |
+| API Misconfiguration | `--api-misconfiguration` | `-M` | `./vulphex --url https://example.com -M` |
+```
+### Aggregate Assessments
+
+| Assessment | Full Option | Short | Description |
+|---|---|---|---|
+| All Authentication Tests | `--all` | `-a` | Run all authentication-related assessments |
+| All Authorization Tests | `--all-authorization` | `-z` | Run BOLA and BFLA authorization assessments |
+| All Security Tests | `--security-all` | — | Run the complete security assessment |
+
+### API Discovery
+
+| Function | Full Option | Short | Description |
+|---|---|---|---|
+| OpenAPI / Swagger Discovery | `--parse` | `-p` | Discover and display the target API endpoint inventory |
 ### Generate Reports
 
 JSON:
