@@ -94,6 +94,10 @@ Write-Host "[+] Preparing package installer..."
 
 & $VenvPython -m pip install --upgrade pip setuptools wheel
 
+Write-Host "[+] Installing VULPHEX dependencies..."
+
+& $VenvPython -m pip install -r (Join-Path $ScriptDir "requirements.txt")
+
 Write-Host "[+] Installing VULPHEX..."
 
 & $VenvPython -m pip install .

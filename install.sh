@@ -86,6 +86,10 @@ echo "[+] Preparing package installer..."
 # Install VULPHEX
 # --------------------------------------------------
 
+echo "[+] Installing VULPHEX dependencies..."
+
+"$VENV_PYTHON" -m pip install -r "$SCRIPT_DIR/requirements.txt"
+
 echo "[+] Installing VULPHEX..."
 
 "$VENV_PYTHON" -m pip install .
