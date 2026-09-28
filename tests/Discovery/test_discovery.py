@@ -1,4 +1,5 @@
 import json
+from unittest import result
 
 import httpx
 import pytest
@@ -219,25 +220,26 @@ def test_discovery_sanitizes_target_and_specification_urls() -> None:
     assert calls == ["https://api.test:8443/api/openapi.json"]
 
 
-def test_discover_cli_json_output_is_machine_readable(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_cli_output_lists_discovered_endpoints(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         "vulphex.__main__.discover_openapi",
         lambda url: discover_result(),
     )
 
-    result = CliRunner().invoke(app, ["discover", "--url", "http://api.test", "--output", "json"])
+    result = CliRunner().invoke(app, ["--url", "http://api.test", "--parse"])
 
+    
     assert result.exit_code == 0
-    payload = json.loads(result.stdout)
-    assert payload["endpoint_count"] == 4
-    assert payload["specification_url"] == "http://api.test/openapi.json"
-    assert "/users" in [endpoint["path"] for endpoint in payload["endpoints"]]
+    assert "OpenAPI/Swagger specification discovered for: http://api.test" in result.stdout
+    assert "Endpoints discovered: 4" in result.stdout
+    assert "GET     /users" in result.stdout
+    assert "POST    /users" in result.stdout
 
 
-def test_discover_cli_text_output_lists_count_and_paths(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_parse_cli_text_output_lists_count_and_paths(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("vulphex.__main__.discover_openapi", lambda url: discover_result())
 
-    result = CliRunner().invoke(app, ["discover", "--url", "http://api.test"])
+    result = CliRunner().invoke(app, ["--url", "http://api.test", "--parse"])
 
     assert result.exit_code == 0
     assert "Endpoints discovered: 4" in result.stdout

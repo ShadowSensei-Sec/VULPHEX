@@ -1,5 +1,5 @@
 import json
-
+from pathlib import Path
 import httpx
 import pytest
 from typer.testing import CliRunner
@@ -212,19 +212,43 @@ def test_auth002_json_cli_output_is_machine_readable(monkeypatch: pytest.MonkeyP
         "VULPHEX_BFLA_METHOD",
     ):
         monkeypatch.delenv(key, raising=False)
-    result = CliRunner().invoke(app, ["assess-api", "--url", "https://example.test", "--output", "json"])
+    result = CliRunner().invoke(
+        app,
+        ["--url", "https://example.test", "--scan", "--json"],
+    )
 
     assert result.exit_code == 0
-    payload = json.loads(result.stdout)
-    assert [item["test_id"] for item in payload] == ["AUTH-001", "AUTH-002", "AUTHZ-001", "AUTHZ-002", "INPUT-001", "INJ-001", "INJ-002", "INJ-003", "DATA-001", "INFO-001", "CONFIG-001", "CONFIG-002", "CONFIG-003"]
-    assert payload[1]["status"] == "AUTHENTICATION_DECLARED"
-    assert payload[2]["status"] == "AUTHENTICATION_REQUIRED"
-    assert payload[3]["status"] == "AUTHENTICATION_REQUIRED"
-    assert payload[4]["status"] == "NOT_APPLICABLE"
-    assert payload[5]["status"] == "NOT_APPLICABLE"
-    assert payload[6]["status"] == "AUTHENTICATION_REQUIRED"
-    assert payload[7]["status"] == "AUTHENTICATION_REQUIRED"
-    assert payload[8]["status"] == "NO_SENSITIVE_DATA_EXPOSURE_INDICATED"
-    assert payload[9]["status"] == "NO_INFORMATION_DISCLOSURE_INDICATED"
-    assert payload[10]["status"] == "AUTHENTICATION_REQUIRED"
-    assert payload[11]["status"] == "AUTHENTICATION_REQUIRED"
+
+    report_path = Path("results/scan.json")
+    assert report_path.exists()
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    results = payload["results"]
+
+    assert [item["test_id"] for item in results] == [
+        "AUTH-001",
+        "AUTH-002",
+        "AUTHZ-001",
+        "AUTHZ-002",
+        "INPUT-001",
+        "INJ-001",
+        "INJ-002",
+        "INJ-003",
+        "DATA-001",
+        "INFO-001",
+        "CONFIG-001",
+        "CONFIG-002",
+        "CONFIG-003",
+    ]
+
+    assert results[1]["status"] == "AUTHENTICATION_DECLARED"
+    assert results[2]["status"] == "AUTHENTICATION_REQUIRED"
+    assert results[3]["status"] == "AUTHENTICATION_REQUIRED"
+    assert results[4]["status"] == "NOT_APPLICABLE"
+    assert results[5]["status"] == "NOT_APPLICABLE"
+    assert results[6]["status"] == "AUTHENTICATION_REQUIRED"
+    assert results[7]["status"] == "AUTHENTICATION_REQUIRED"
+    assert results[8]["status"] == "NO_SENSITIVE_DATA_EXPOSURE_INDICATED"
+    assert results[9]["status"] == "NO_INFORMATION_DISCLOSURE_INDICATED"
+    assert results[10]["status"] == "AUTHENTICATION_REQUIRED"
+    assert results[11]["status"] == "AUTHENTICATION_REQUIRED"

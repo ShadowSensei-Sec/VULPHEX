@@ -159,10 +159,21 @@ def test_assess_api_reads_existing_environment_configuration_without_echoing_sec
         lambda url: DiscoveryResult(
             target="https://example.test",
             specification_url="https://example.test/openapi.json",
-            inventory=EndpointInventory(),
+            inventory=EndpointInventory(
+                [
+                    Endpoint(
+                        path="/protected",
+                        method="GET",
+                    )
+                ]
+            ),
+            resolved_endpoints=(endpoint("/protected"),),
         ),
+    ),
+    result = CliRunner().invoke(
+        app,
+        ["--url", "https://example.test", "--scan", "--json"],
     )
-    result = CliRunner().invoke(app, ["assess-api", "--url", "https://example.test", "--output", "json"])
 
     assert result.exit_code == 0
     assert "synthetic-token" not in result.stdout

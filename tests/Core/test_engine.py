@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 from typer.testing import CliRunner
@@ -84,16 +85,46 @@ def test_engine_turns_test_failure_into_safe_explicit_result() -> None:
     assert results[0].evidence == {"error": "unexpected_test_execution_error"}
 
 
-def test_assess_cli_runs_authentication_test_in_json_mode() -> None:
+def test_assess_cli_runs_authentication_test_in_json_mode(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    endpoint = resolved_endpoint("GET", "/public", "publicEndpoint")
+
+    discovery = DiscoveryResult(
+        target="https://example.test",
+        specification_url="https://example.test/openapi.json",
+        inventory=EndpointInventory(
+            [
+                Endpoint(
+                    path="/public",
+                    method="GET",
+                    operation_id="publicEndpoint",
+                )
+            ]
+        ),
+        resolved_endpoints=(endpoint,),
+    )
+
+    monkeypatch.setattr(
+        "vulphex.__main__.discover_openapi",
+        lambda url: discovery,
+    )
+
     result = CliRunner().invoke(
         app,
-        ["assess", "--url", "http://127.0.0.1:8000/public", "--output", "json"],
+        ["--url", "https://example.test", "--missing-authentication", "--json"],
     )
 
     assert result.exit_code == 0
-    payload = json.loads(result.stdout)
-    assert len(payload) == 1
-    assert payload[0]["test_id"] == "AUTH-001"
+
+    report_path = Path("results/auth-test.json")
+    assert report_path.exists()
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    results = payload["results"]
+
+    assert len(results) == 1
+    assert results[0]["test_id"] == "AUTH-001"
 
 
 def resolved_endpoint(method: str, path: str, operation_id: str) -> ResolvedEndpoint:
@@ -153,12 +184,21 @@ def test_assess_api_cli_renders_discovered_context_in_json(monkeypatch: pytest.M
     monkeypatch.setattr("vulphex.__main__.discover_openapi", lambda url: discovery)
     monkeypatch.setattr("vulphex.__main__.MissingAuthenticationTest", lambda: MethodAwareTest("AUTH-001", []))
 
-    result = CliRunner().invoke(app, ["assess-api", "--url", "https://example.test", "--output", "json"])
-
+    result = CliRunner().invoke(
+        app,
+        ["--url", "https://example.test", "--missing-authentication", "--json"],
+    )
     assert result.exit_code == 0
-    payload = json.loads(result.stdout)
-    assert payload[0]["endpoint_path"] == "/users"
-    assert payload[0]["operation_id"] == "listUsers"
+
+    report_path = Path("results/auth-test.json")
+    assert report_path.exists()
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    results = payload["results"]
+
+    assert results[0]["endpoint_path"] == "/users"
+    assert results[0]["operation_id"] == "listUsers"
+
 
 
 def test_assess_api_cli_reports_sanitized_discovery_failure(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -169,9 +209,14 @@ def test_assess_api_cli_reports_sanitized_discovery_failure(monkeypatch: pytest.
 
     result = CliRunner().invoke(
         app,
-        ["assess-api", "--url", "https://user:secret@example.test/api?token=private", "--output", "json"],
+        [
+            "--url",
+            "https://user:secret@example.test/api?token=private",
+            "--missing-authentication",
+            "--json",
+        ],
     )
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "secret" not in result.stdout
     assert "token" not in result.stdout

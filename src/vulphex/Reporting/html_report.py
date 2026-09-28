@@ -1584,7 +1584,6 @@ def _render_coverage(report: AssessmentReport) -> str:
         rows.append(
             f"""
             <tr>
-                <td><strong>{escape(test_id)}</strong></td>
                 <td>{escape(test_name)}</td>
                 <td>{item["results"]}</td>
                 <td>{item["potential"]}</td>
@@ -1607,7 +1606,6 @@ def _render_coverage(report: AssessmentReport) -> str:
         <table class="compact-table coverage-table">
             <thead>
                 <tr>
-                    <th>Test ID</th>
                     <th>Assessment</th>
                     <th>Results</th>
                     <th>Potential Findings</th>
@@ -1648,7 +1646,10 @@ def _render_findings_summary(report: AssessmentReport) -> str:
             f"""
             <tr>
                 <td>{escape(str(finding.get("finding_id", "Unknown")))}</td>
-                <td>{escape(str(finding.get("test_id", "Unknown")))}</td>
+                <td>{escape(str(
+                    finding.get("test_name")
+                    or _TEST_NAMES.get(str(finding.get("test_id", "")), "Unknown")
+                ))}</td>
                 <td>
                     <span class="severity {_severity_class(severity)}">
                         {escape(str(severity or "Not determined"))}
@@ -1822,8 +1823,6 @@ def _render_finding(finding: dict[str, Any]) -> str:
                     <div class="finding-meta">
                         <strong>{escape(finding_id)}</strong>
                         &nbsp;·&nbsp;
-                        {escape(test_id)}
-                        &nbsp;·&nbsp;
                         {escape(method)} {escape(endpoint)}
                     </div>
                 </div>
@@ -1850,8 +1849,8 @@ def _render_finding(finding: dict[str, Any]) -> str:
                 </div>
 
                 <div class="overview-card">
-                    <span class="overview-label">Test</span>
-                    <strong>{escape(test_id)} — {escape(test_name)}</strong>
+                    <span class="overview-label">Assessment</span>
+                    <strong>{escape(test_name)}</strong>
                 </div>
 
                 <div class="overview-card">
