@@ -288,8 +288,7 @@ VULPHEX supports individual security assessments using either the full option na
 | Rate Limiting | `--rate-limiting` | `-l` | `./vulphex --url https://example.com -l` |
 | Security Configuration | `--security-configuration` | `-q` | `./vulphex --url https://example.com -q` |
 | API Misconfiguration | `--api-misconfiguration` | `-M` | `./vulphex --url https://example.com -M` |
-```
-```
+
 ### Aggregate Assessments
 
 | Assessment | Full Option | Short | Description |
@@ -297,15 +296,13 @@ VULPHEX supports individual security assessments using either the full option na
 | All Authentication Tests | `--all` | `-a` | Run all authentication-related assessments |
 | All Authorization Tests | `--all-authorization` | `-z` | Run BOLA and BFLA authorization assessments |
 | All Security Tests | `--security-all` | — | Run the complete security assessment |
-```
-```
+
 ### API Discovery
 
 | Function | Full Option | Short | Description |
 |---|---|---|---|
 | OpenAPI / Swagger Discovery | `--parse` | `-p` | Discover and display the target API endpoint inventory |
-```
-```
+
 ### Generate Reports
 
 JSON:
