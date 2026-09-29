@@ -84,7 +84,7 @@ def render_assessment_report_json(
     results: list[AssessmentResult] | tuple[AssessmentResult, ...],
     *,
     target: str,
-    tool_version: str = "0.1.0",
+    tool_version: str = "1.0.0",
     generated_at: str | None = None,
 ) -> str:
     """Build and serialize a VULPHEX assessment report as JSON."""
