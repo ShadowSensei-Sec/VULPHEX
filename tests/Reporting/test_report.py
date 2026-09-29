@@ -1,3 +1,4 @@
+from vulphex import __version__
 from vulphex.Core.models import AssessmentResult
 from vulphex.Reporting.report import (
     AssessmentReport,
@@ -40,7 +41,7 @@ def test_build_assessment_report_contains_metadata():
 
     assert isinstance(report, AssessmentReport)
     assert report.tool == "VULPHEX"
-    assert report.tool_version == "0.1.0"
+    assert report.tool_version == __version__
     assert report.target == "https://example.test"
     assert report.generated_at == "2026-09-26T00:00:00+00:00"
     assert report.result_count == 1
@@ -90,7 +91,7 @@ def test_report_metadata_is_inside_report_section():
     metadata = report.to_dict()["report"]
 
     assert metadata["tool"] == "VULPHEX"
-    assert metadata["tool_version"] == "0.1.0"
+    assert metadata["tool_version"] == __version__
     assert metadata["target"] == "https://example.test"
     assert metadata["generated_at"] == "2026-09-26T00:00:00+00:00"
 
