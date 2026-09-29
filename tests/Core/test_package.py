@@ -7,7 +7,7 @@ from vulphex.Core.http_client import sanitize_url, validate_url
 
 
 def test_package_version_is_defined() -> None:
-    assert vulphex.__version__ == "0.1.0"
+    assert vulphex.__version__ == "1.0.0"
 
 
 def make_response(status_code: int, body: str = "") -> httpx.Response:
