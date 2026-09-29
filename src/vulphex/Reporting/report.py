@@ -59,7 +59,7 @@ def build_assessment_report(
     results: list[AssessmentResult] | tuple[AssessmentResult, ...],
     *,
     target: str,
-    tool_version: str = "0.1.0",
+    tool_version: str = "1.0.0",
     generated_at: str | None = None,
 ) -> AssessmentReport:
     """Build the canonical VULPHEX assessment report from assessment results."""
