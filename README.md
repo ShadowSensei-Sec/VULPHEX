@@ -170,7 +170,7 @@ chmod +x install.sh vulphex
 Launch VULPHEX:
 
 ```bash
-./vulphex --help
+./vulphex 
 ```
 
 ### Windows PowerShell
@@ -191,7 +191,7 @@ Run the installer:
 Launch VULPHEX:
 
 ```powershell
-.\vulphex.ps1 --help
+.\vulphex.ps1 
 ```
 
 ### Requirements
